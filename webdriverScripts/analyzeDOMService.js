@@ -3,6 +3,7 @@ $(':visible').filter(function(){ return $(this).css('cursor') == 'pointer';});
 
 
 function createXPathFromElement(elm) {
+
     var allNodes = document.getElementsByTagName('*');
     for (var segs = []; elm && elm.nodeType == 1; elm = elm.parentNode)
     {
