@@ -1,5 +1,7 @@
 package com.kuchar
 
+import grails.converters.JSON
+import org.codehaus.groovy.grails.web.json.JSONArray
 import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.firefox.FirefoxDriver
@@ -14,8 +16,16 @@ import java.util.logging.Level
 
 class MainController {
 
-    def consoleOut(){
-        println params
+    def saveCursorXPathElements(){
+
+        JSONArray elements = JSON.parse(params.elements);
+
+
+        elements.each {
+            println(it)
+        }
+
+        render 200
     }
 
     def index() {
@@ -27,21 +37,16 @@ class MainController {
 
 
 
-        driver.get("https://drive.google.com/drive/my-drive");
-
-        String jQueryLoader = readFile("webdriverScripts//jQuerify.js");
+     //   driver.get("https://drive.google.com/drive/my-drive");
+        driver.get("http://webwavecms.com/");
 
         // give jQuery time to load asynchronously
         driver.manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeAsyncScript(jQueryLoader /*, http://localhost:8080/jquery-1.7.2.js */);
+        js.executeAsyncScript(readFile("webdriverScripts//jQuerify.js"));
 
 
-
-
-        String qqq = readFile("webdriverScripts//libLoad.js");
-
-        js.executeAsyncScript(qqq);
+        js.executeAsyncScript(readFile("webdriverScripts//libLoad.js"));
         //js.executeAsyncScript(readFile("webdriverScripts//tmp.js"));
 
 //        String www = readFile("webdriverScripts//tmp.js");
