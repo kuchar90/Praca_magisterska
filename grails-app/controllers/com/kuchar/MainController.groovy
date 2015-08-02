@@ -17,12 +17,12 @@ import java.util.logging.Level
 class MainController {
 
     def saveCursorXPathElements(){
+        println params
 
         JSONArray elements = JSON.parse(params.elements);
 
-
         elements.each {
-            println(it)
+            Element element = new Element(XPath: it).save()
         }
 
         render 200
@@ -46,7 +46,7 @@ class MainController {
         js.executeAsyncScript(readFile("webdriverScripts//jQuerify.js"));
 
 
-        js.executeAsyncScript(readFile("webdriverScripts//libLoad.js"));
+        //js.executeAsyncScript(readFile("webdriverScripts//libLoad.js"));
         //js.executeAsyncScript(readFile("webdriverScripts//tmp.js"));
 
 //        String www = readFile("webdriverScripts//tmp.js");

@@ -1,4 +1,3 @@
-
 if (typeof jqueryUrl != 'string') {
     jqueryUrl = 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js';
 }
@@ -28,12 +27,22 @@ else {
 function getAllCursorElement(){
     var cursorElement = $(':visible').filter(function(){ return $(this).css('cursor') == 'pointer';});
     var cursorElementXPath = [];
-        cursorElement.each(function(){
-            cusrosorElementsXPath.add(createXPathFromElement($(this)[0]));
+    cursorElement.each(function(){
+        cursorElementXPath.push(createXPathFromElement($(this)[0]));
 
 
-        })
+    })
     console.log(cursorElementXPath);
+
+
+    $.ajax({
+        url: 'http://localhost:8080/Praca_magisterska/main/saveCursorXPathElements',
+        data: { elements: JSON.stringify(cursorElementXPath)},
+        success: function(data) {
+
+        },
+        type: 'POST'
+    });
 
 }
 
@@ -63,7 +72,7 @@ function createXPathFromElement(elm) {
         };
     };
     return segs.length ? '/' + segs.join('/') : null;
-};
+}
 
 function lookupElementByXPath(path) {
     var evaluator = new XPathEvaluator();
