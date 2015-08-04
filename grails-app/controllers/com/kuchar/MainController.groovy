@@ -17,33 +17,47 @@ import java.util.logging.Level
 class MainController {
 
     def saveCursorXPathElements(){
+        log.debug("saveCursorXPathElements")
         println params
-
         JSONArray elements = JSON.parse(params.elements);
-
+        Website website = Website.list()[0];
         elements.each {
-            Element element = new Element(XPath: it).save()
+            println it
+            Element element = new Element(XPath: it)
+            website.addToElements(element);
+
         }
+
 
         render 200
     }
 
     def index() {
 
+
+        List<Website> websites = Website.list();
+        websites.each {
+            it.delete(flush: true);
+        }
+
         ProfilesIni profile = new ProfilesIni();
         FirefoxProfile ffprofile = profile.getProfile("default");
 
         WebDriver driver = new FirefoxDriver(ffprofile);
 
-
+        Website website = new Website(url: "http://webwavecms.com/");
+        website.save();
 
      //   driver.get("https://drive.google.com/drive/my-drive");
-        driver.get("http://webwavecms.com/");
+        driver.get(website.url);
 
         // give jQuery time to load asynchronously
         driver.manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeAsyncScript(readFile("webdriverScripts//jQuerify.js"));
+        js.executeScript("console.log(groupService);")
+        js.executeScript(readFile("webdriverScripts//XPathUtils.js"));
+        js.executeScript(readFile("webdriverScripts//jQuerify.js"));
+        js.executeScript(readFile("webdriverScripts//analyzeDOMService.js"));
 
 
         //js.executeAsyncScript(readFile("webdriverScripts//libLoad.js"));
@@ -56,10 +70,12 @@ class MainController {
 //        );
 
 
-
-
+        driver.quit();
 
     }
+
+
+    def
 
     // helper method
     String readFile(String file) throws IOException {
