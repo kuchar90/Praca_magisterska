@@ -2,9 +2,13 @@ package com.kuchar
 
 class Element {
 
-    String XPath;
+    String elementXPath;
 
     static belongsTo = [Website]
     static constraints = {
+
+    }
+    static mapping = {
+        elementXPath type: "text"
     }
 }
