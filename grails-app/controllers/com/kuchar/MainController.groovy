@@ -4,6 +4,7 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.openqa.selenium.By
 import org.openqa.selenium.JavascriptExecutor
+import org.openqa.selenium.Keys
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.firefox.FirefoxDriver
@@ -11,6 +12,9 @@ import org.openqa.selenium.firefox.FirefoxProfile
 import org.openqa.selenium.firefox.internal.ProfilesIni
 import org.openqa.selenium.logging.LoggingPreferences
 import org.openqa.selenium.remote.DesiredCapabilities
+import org.openqa.selenium.support.ui.ExpectedCondition
+import org.openqa.selenium.support.ui.Wait
+import org.openqa.selenium.support.ui.WebDriverWait
 
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
@@ -52,26 +56,28 @@ class MainController {
 
         driver.get(website.url);
         println "1"
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        String  currentURL = driver.getCurrentUrl();
+
         login(driver)
 
+        ExpectedCondition e = new ExpectedCondition<Boolean>() {
+            public Boolean apply(WebDriver d) {
+                return (d.getCurrentUrl() != currentURL );
+            }
+        };
+
+        wait.until(e);
+
+
+
         println "2"
-        // give jQuery time to load asynchronously
+
         driver.manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript(readFile("webdriverScripts//XPathUtils.js"));
         js.executeScript(readFile("webdriverScripts//jQuerify.js"));
         js.executeScript(readFile("webdriverScripts//analyzeDOMService.js"));
-
-
-        //js.executeAsyncScript(readFile("webdriverScripts//libLoad.js"));
-        //js.executeAsyncScript(readFile("webdriverScripts//anaylyzeElementAction.js"));
-
-//        String www = readFile("webdriverScripts//anaylyzeElementAction.js");
-//        // ready to rock
-//        js.executeScript(
-//                www
-//        );
-
 
 
        driver.quit();
@@ -107,7 +113,8 @@ class MainController {
     }
 
     void login(WebDriver driver){
-
+        WebElement loginPopupButton = driver.findElement(By.id("element_724")).findElement(By.tagName("a"));
+        loginPopupButton.click()
         WebElement username = driver.findElement(By.name("j_username"));
         println(username);
         username.sendKeys("assassin90@gmail.com");
@@ -120,6 +127,34 @@ class MainController {
 
 
     }
+
+    public void waitForJQuery(WebDriver driver) {
+        (new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
+            public Boolean apply(WebDriver d) {
+                JavascriptExecutor js = (JavascriptExecutor) d;
+                return (Boolean) js.executeScript("return !!window.jQuery && window.jQuery.active == 0");
+            }
+        });
+    }
+
+
+    public void waitForPageLoaded(WebDriver driver) {
+
+        ExpectedCondition<Boolean> expectation = new
+                ExpectedCondition<Boolean>() {
+                    public Boolean apply(WebDriver driver1) {
+                        return ((JavascriptExecutor)driver).executeScript("return document.readyState").equals("complete");
+                    }
+                };
+
+        Wait<WebDriver> wait = new WebDriverWait(driver,30);
+        try {
+            wait.until(expectation);
+        } catch(Throwable error) {
+
+        }
+    }
+
 
     WebDriver getFirefoxDriver(){
         ProfilesIni profile = new ProfilesIni();
