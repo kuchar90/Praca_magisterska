@@ -55,23 +55,8 @@ class MainController {
         website.save();
 
         driver.get(website.url);
-        println "1"
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-        String  currentURL = driver.getCurrentUrl();
 
         login(driver)
-
-        ExpectedCondition e = new ExpectedCondition<Boolean>() {
-            public Boolean apply(WebDriver d) {
-                return (d.getCurrentUrl() != currentURL );
-            }
-        };
-
-        wait.until(e);
-
-
-
-        println "2"
 
         driver.manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
         JavascriptExecutor js = (JavascriptExecutor) driver;
@@ -85,10 +70,12 @@ class MainController {
     }
 
     def anaylyzeElementAction(){
-        Website website = Website.findById(1);
-        Element element = website.elements.find{it.id == 1}
+        Website website = Website.list()[0]
+        Element element = website.elements.asList().sort{it.id}[0]
 
-        println element.elementXPath
+        println element.elementXPath.replaceAll("(\\r|\\n|\\r\\n)+", "\\\\n")
+
+
 
         WebDriver driver = this.getFirefoxDriver();
 
@@ -97,16 +84,16 @@ class MainController {
 
         login(driver)
 
-            // give jQuery time to load asynchronously
-            driver.manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript(readFile("webdriverScripts//libLoad.js"));
-            js.executeScript(readFile("webdriverScripts//XPathUtils.js"));
-            js.executeScript(readFile("webdriverScripts//jQuerify.js"));
-            js.executeScript(readFile("webdriverScripts//anaylyzeElementAction.js"));
-            js.executeScript(
-                    "addJqueryLib(function(){anaylyzeElementAction('${element.elementXPath}');});"
-            );
+        // give jQuery time to load asynchronously
+        driver.manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript(readFile("webdriverScripts//libLoad.js"));
+        js.executeScript(readFile("webdriverScripts//XPathUtils.js"));
+        js.executeScript(readFile("webdriverScripts//jQuerify.js"));
+        js.executeScript(readFile("webdriverScripts//anaylyzeElementAction.js"));
+        js.executeScript(
+                "addJqueryLib(function(){anaylyzeElementAction('${element.elementXPath.replaceAll("(\\r|\\n|\\r\\n)+", "\\\\n")}');});"
+        );
 
 
 
@@ -116,43 +103,22 @@ class MainController {
         WebElement loginPopupButton = driver.findElement(By.id("element_724")).findElement(By.tagName("a"));
         loginPopupButton.click()
         WebElement username = driver.findElement(By.name("j_username"));
-        println(username);
         username.sendKeys("assassin90@gmail.com");
         WebElement password = driver.findElement(By.name("j_password"));
         password.sendKeys("zalman1952");
 
+        String  currentURL = driver.getCurrentUrl();
+        WebDriverWait wait = new WebDriverWait(driver, 10);
         WebElement loginButton = driver.findElement(By.id('login_submit_button'));
         loginButton.click();
-
-
-
-    }
-
-    public void waitForJQuery(WebDriver driver) {
-        (new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
+        ExpectedCondition e = new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver d) {
-                JavascriptExecutor js = (JavascriptExecutor) d;
-                return (Boolean) js.executeScript("return !!window.jQuery && window.jQuery.active == 0");
+                return (d.getCurrentUrl() != currentURL );
             }
-        });
-    }
+        };
 
+        wait.until(e);
 
-    public void waitForPageLoaded(WebDriver driver) {
-
-        ExpectedCondition<Boolean> expectation = new
-                ExpectedCondition<Boolean>() {
-                    public Boolean apply(WebDriver driver1) {
-                        return ((JavascriptExecutor)driver).executeScript("return document.readyState").equals("complete");
-                    }
-                };
-
-        Wait<WebDriver> wait = new WebDriverWait(driver,30);
-        try {
-            wait.until(expectation);
-        } catch(Throwable error) {
-
-        }
     }
 
 
