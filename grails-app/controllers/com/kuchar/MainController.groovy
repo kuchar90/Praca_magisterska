@@ -87,7 +87,8 @@ class MainController {
         // give jQuery time to load asynchronously
         driver.manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript(readFile("webdriverScripts//libLoad.js"));
+        loadjsFile(driver, "http://localhost:8080/Praca_magisterska/main/getJavascriptFile?src=webdriverScripts//mutation-summary.js");
+      //  js.executeScript(readFile("webdriverScripts//mutation-summary.js"));
         js.executeScript(readFile("webdriverScripts//XPathUtils.js"));
         js.executeScript(readFile("webdriverScripts//jQuerify.js"));
         js.executeScript(readFile("webdriverScripts//anaylyzeElementAction.js"));
@@ -99,6 +100,14 @@ class MainController {
 
     }
 
+     void loadjsFile(WebDriver driver, String scriptSrc) {
+        String injectScript = 'var script = document.createElement("script");';
+        injectScript += 'script.src = "' + scriptSrc + '";';
+        injectScript += 'script.setAttribute("type","text/javascript");';
+        injectScript += 'document.body.appendChild(script);';
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript(injectScript);
+    }
     void login(WebDriver driver){
         WebElement loginPopupButton = driver.findElement(By.id("element_724")).findElement(By.tagName("a"));
         loginPopupButton.click()
@@ -128,6 +137,11 @@ class MainController {
         return new FirefoxDriver(ffprofile);
     }
 
+
+    def getJavascriptFile(){
+        render readFile(params.src)
+    }
+
     // helper method
     String readFile(String file) throws IOException {
         Charset cs = Charset.forName("UTF-8");
@@ -146,5 +160,8 @@ class MainController {
             stream.close();
         }
     }
+
+
+
 
 }
