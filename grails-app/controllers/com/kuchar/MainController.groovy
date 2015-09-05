@@ -60,22 +60,34 @@ class MainController {
 
         driver.manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript(readFile("webdriverScripts//XPathUtils.js"));
-        js.executeScript(readFile("webdriverScripts//jQuerify.js"));
-        js.executeScript(readFile("webdriverScripts//analyzeDOMService.js"));
-
+        loadjsFile(driver, "webdriverScripts//jQuerify.js");
+        loadjsFile(driver, "webdriverScripts//XPathUtils.js");
+        loadjsFile(driver, "webdriverScripts//analyzeDOMService.js");
+        js.executeScript(
+                "getAllCursorElement();"
+        );
 
        driver.quit();
 
     }
 
+    def getElement(){
+        Website website = Website.list()[0]
+       println  website.elements.find{it.elementXPath == 'id("ownWebsitesList")/ul[@class="websiteInfo \n' +
+               '\t\t\n' +
+               '\t\texpired"]/li[@class="websiteNameCell"]'}
+
+
+    }
+
     def anaylyzeElementAction(){
         Website website = Website.list()[0]
-        Element element = website.elements.asList().sort{it.id}[0]
+        Element element = website.elements.find{it.elementXPath == 'id("ownWebsitesList")/ul[@class="websiteInfo \n' +
+                '\t\t\n' +
+                '\t\texpired"]/li[@class="websiteNameCell"]'}
 
-        println element.elementXPath.replaceAll("(\\r|\\n|\\r\\n)+", "\\\\n")
 
-
+        //anaylyzeElementAction(createXPathFromElement($('.websiteCellWrapper').eq(0)[0]))
 
         WebDriver driver = this.getFirefoxDriver();
 
@@ -87,13 +99,12 @@ class MainController {
         // give jQuery time to load asynchronously
         driver.manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        loadjsFile(driver, "http://localhost:8080/Praca_magisterska/main/getJavascriptFile?src=webdriverScripts//mutation-summary.js");
-      //  js.executeScript(readFile("webdriverScripts//mutation-summary.js"));
-        js.executeScript(readFile("webdriverScripts//XPathUtils.js"));
-        js.executeScript(readFile("webdriverScripts//jQuerify.js"));
-        js.executeScript(readFile("webdriverScripts//anaylyzeElementAction.js"));
+        loadjsFile(driver, "webdriverScripts//jQuerify.js");
+        loadjsFile(driver, "webdriverScripts//XPathUtils.js");
+        loadjsFile(driver, "webdriverScripts//mutation-summary.js");
+        loadjsFile(driver, "webdriverScripts//anaylyzeElementAction.js");
         js.executeScript(
-                "addJqueryLib(function(){anaylyzeElementAction('${element.elementXPath.replaceAll("(\\r|\\n|\\r\\n)+", "\\\\n")}');});"
+                "anaylyzeElementAction('${element.elementXPath.replaceAll("(\\r|\\n|\\r\\n)+", "\\\\n")}');"
         );
 
 
@@ -102,12 +113,15 @@ class MainController {
 
      void loadjsFile(WebDriver driver, String scriptSrc) {
         String injectScript = 'var script = document.createElement("script");';
-        injectScript += 'script.src = "' + scriptSrc + '";';
+        injectScript += 'script.src = "http://localhost:8080/Praca_magisterska/main/getJavascriptFile?src=' + scriptSrc + '";';
         injectScript += 'script.setAttribute("type","text/javascript");';
         injectScript += 'document.body.appendChild(script);';
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript(injectScript);
     }
+
+
+
     void login(WebDriver driver){
         WebElement loginPopupButton = driver.findElement(By.id("element_724")).findElement(By.tagName("a"));
         loginPopupButton.click()

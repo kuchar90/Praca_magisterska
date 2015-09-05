@@ -1,18 +1,19 @@
 
 console.log("anaylyzeElementAction.js loaded");
+var observer;
 
-
-window.anaylyzeElementAction = function anaylyzeElementAction(elementXpath){
+anaylyzeElementAction = function anaylyzeElementAction(elementXpath){
   var element = lookupElementByXPath(elementXpath);
   console.log(element);
 
-  var observer = new MutationSummary({
+  observer = new MutationSummary({
     callback: funcCall,
     queries: [{ all: true }]
   });
 
 
   element.click();
+
 
 }
 
@@ -26,7 +27,17 @@ function funcCall(summaries){
   });
   console.log(array);
 
-  console.log(commonAncestor(array));
+  var anc = commonAncestor(array);
+  console.log(anc);
+
+
+  var i = array.indexOf(anc);
+  if(i != -1) {
+    //array.splice(i, 1);
+    console.log(i);
+  }
+
+  //observer.disconnect();
 }
 
 window.commonAncestor = function commonAncestor(array) {

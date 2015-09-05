@@ -1,6 +1,4 @@
-console.log("analyzeDOMService.js loaded");
-
-window.getAllCursorElement = function(){
+getAllCursorElement = function(){
     console.log('getAllCursorElement');
     var cursorElement = $(':visible').filter(function(){ return $(this).css('cursor') == 'pointer';});
     var cursorElementXPath = [];
@@ -10,7 +8,6 @@ window.getAllCursorElement = function(){
 
     })
     console.log(cursorElementXPath);
-
 
     $.ajax({
         url: 'http://localhost:8080/Praca_magisterska/main/saveCursorXPathElements',
@@ -23,4 +20,3 @@ window.getAllCursorElement = function(){
 
 }
 
-addJqueryLib(getAllCursorElement);

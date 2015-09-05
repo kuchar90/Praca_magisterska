@@ -1,6 +1,4 @@
-console.log("XPathUtils.js loaded");
-var XPathUtils;
-window.createXPathFromElement = function(elm){
+createXPathFromElement = function(elm){
     var allNodes = document.getElementsByTagName('*');
     for (var segs = []; elm && elm.nodeType == 1; elm = elm.parentNode)
     {
@@ -27,7 +25,7 @@ window.createXPathFromElement = function(elm){
     return segs.length ? '/' + segs.join('/') : null;
 }
 
-window.lookupElementByXPath = function(path){
+lookupElementByXPath = function(path){
     var evaluator = new XPathEvaluator();
     var result = evaluator.evaluate(path, document.documentElement, null,XPathResult.FIRST_ORDERED_NODE_TYPE, null);
     return  result.singleNodeValue;
