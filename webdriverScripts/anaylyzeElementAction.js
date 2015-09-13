@@ -2,7 +2,7 @@
 console.log("anaylyzeElementAction.js loaded");
 var observer;
 
-anaylyzeElementAction = function anaylyzeElementAction(elementXpath){
+function anaylyzeElementAction(elementXpath){
   var element = lookupElementByXPath(elementXpath);
   console.log(element);
 
@@ -19,55 +19,66 @@ anaylyzeElementAction = function anaylyzeElementAction(elementXpath){
 
 function funcCall(summaries){
   var hTweetSummary = summaries[0];
-  console.log(summaries);
   var array = [];
+
   hTweetSummary.added.forEach(function(newEl) {
-    array.push($(newEl));
+    if(newEl.nodeType != 3){
+      var treeObject = {};
+      treeObject.object = newEl;
+      treeObject.children = []
+      array.push(treeObject);
+    }
+
+
 
   });
+  console.log('array');
   console.log(array);
 
-  var anc = commonAncestor(array);
-  console.log(anc);
+
+  var objectsTree = sortObjects(array);
 
 
-  var i = array.indexOf(anc);
-  if(i != -1) {
-    //array.splice(i, 1);
-    console.log(i);
-  }
-
-  //observer.disconnect();
 }
 
-window.commonAncestor = function commonAncestor(array) {
-  var parents = [];
-  var minlen = Infinity;
+function sortObjects(array){
+  console.log('begin');
+  console.log(array);
+  var objectsTree = [];
 
-  for (var index = 0; index < array.length; ++index) {
-    var curparents = array[index].parents();
-    parents.push(curparents);
-    minlen = Math.min(minlen, curparents.length);
-  }
+  for(i = 0; i< array.length; i++){
+    var treeObject = {};
+    treeObject.object = array[i].object;
+    treeObject.children = []
+    objectsTree.push(treeObject);
 
 
-  for (var i in parents) {
-    parents[i] = parents[i].slice(parents[i].length - minlen);
-  }
-
-  if(parents.length > 0){
-    // Iterate until equality is found
-    for (var i = 0; i < parents[0].length; i++) {
-      var equal = true;
-      for (var j in parents) {
-        if (parents[j][i] != parents[0][i]) {
-          equal = false;
-          break;
-        }
+    for(j = i+1; j< array.length; j++){
+      if($.contains(treeObject.object, array[j].object)){
+        treeObject.children.push(array[j]);
+        array.splice(j, 1);
+        j--;
       }
-      if (equal) return $(parents[0][i]);
     }
-  }
+    array = array.splice(i, 1);
 
-  return $([]);
+    for(k = 0; k < objectsTree.length ;k++) {
+      if ($.contains(treeObject.object, objectsTree[k].object)) {
+        treeObject.children.push(objectsTree[k]);
+        objectsTree[k] = treeObject;
+      }
+    }
+
+    if(treeObject.children.length > 0){
+      console.log('recurs');
+      console.log(treeObject.object);
+      console.log(treeObject.children);
+      treeObject.children = sortObjects(treeObject.children) ;
+    }
+
+
+  }
+  console.log('end');
+  console.log(objectsTree);
+  return objectsTree
 }

@@ -102,10 +102,10 @@ class MainController {
         loadjsFile(driver, "webdriverScripts//jQuerify.js");
         loadjsFile(driver, "webdriverScripts//XPathUtils.js");
         loadjsFile(driver, "webdriverScripts//mutation-summary.js");
-        loadjsFile(driver, "webdriverScripts//anaylyzeElementAction.js");
-        js.executeScript(
-                "anaylyzeElementAction('${element.elementXPath.replaceAll("(\\r|\\n|\\r\\n)+", "\\\\n")}');"
-        );
+       // loadjsFile(driver, "webdriverScripts//anaylyzeElementAction.js");
+//        js.executeScript(
+//                "anaylyzeElementAction('${element.elementXPath.replaceAll("(\\r|\\n|\\r\\n)+", "\\\\n")}');"
+//        );
 
 
 
