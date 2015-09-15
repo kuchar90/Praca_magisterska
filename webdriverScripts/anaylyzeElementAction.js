@@ -33,25 +33,22 @@ function funcCall(summaries){
 
   });
   console.log('array');
-  console.log(array);
+
 
 
   var objectsTree = sortObjects(array);
-
+  console.log(objectsTree);
 
 }
 
 function sortObjects(array){
-  console.log('begin');
-  console.log(array);
   var objectsTree = [];
+  for(i = 0; i < array.length; i++){
 
-  for(i = 0; i< array.length; i++){
     var treeObject = {};
     treeObject.object = array[i].object;
     treeObject.children = []
     objectsTree.push(treeObject);
-
 
     for(j = i+1; j< array.length; j++){
       if($.contains(treeObject.object, array[j].object)){
@@ -60,7 +57,8 @@ function sortObjects(array){
         j--;
       }
     }
-    array = array.splice(i, 1);
+    array.splice(i, 1);
+
 
     for(k = 0; k < objectsTree.length ;k++) {
       if ($.contains(treeObject.object, objectsTree[k].object)) {
@@ -70,15 +68,9 @@ function sortObjects(array){
     }
 
     if(treeObject.children.length > 0){
-      console.log('recurs');
-      console.log(treeObject.object);
-      console.log(treeObject.children);
       treeObject.children = sortObjects(treeObject.children) ;
     }
 
-
   }
-  console.log('end');
-  console.log(objectsTree);
   return objectsTree
 }
