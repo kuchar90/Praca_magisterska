@@ -1,8 +1,17 @@
 
 console.log("anaylyzeElementAction.js loaded");
 var observer;
-
+var funcCall;
+var treeToXpaths;
+var test;
+var testXpath;
 function anaylyzeElementAction(elementXpath){
+
+
+  if(typeof observer != 'undefined'){
+    observer.disconnect();
+  }
+
   var element = lookupElementByXPath(elementXpath);
   console.log(element);
 
@@ -17,7 +26,7 @@ function anaylyzeElementAction(elementXpath){
 
 }
 
-function funcCall(summaries){
+funcCall = function funcCall(summaries){
   var hTweetSummary = summaries[0];
   var array = [];
 
@@ -32,13 +41,45 @@ function funcCall(summaries){
 
 
   });
-  console.log('array');
-
-
 
   var objectsTree = sortObjects(array);
-  console.log(objectsTree);
 
+
+  console.log(objectsTree);
+  console.log(objectsTree[0]);
+  test = objectsTree[0];
+  testXpath= treeToXpaths(objectsTree[0]);
+     console.log(testXpath);
+  console.log(JSON.stringify(testXpath));
+      $.ajax({
+    url: 'http://localhost:8080/Praca_magisterska/main/saveElementActionElements',
+    data: { elements: JSON.stringify(testXpath)},
+    success: function(data) {
+
+    },
+    type: 'POST'
+  });
+
+
+
+}
+
+treeToXpaths = function treeToXpaths(elementsTree){
+  //console.log(elementsTree);
+  var xpathTree = {};
+  if(typeof elementsTree != 'undefined' && typeof  elementsTree.object != 'undefined'){
+    xpathTree.object = createXPathFromElement(elementsTree.object);
+    var childrens = elementsTree.children;
+    if(childrens.length > 0){
+      xpathTree.childrens = [];
+      for(j = 0; j< childrens.length; j++){
+        xpathTree.childrens[j] =  treeToXpaths(childrens[j]);
+      }
+    }
+  }
+
+  //console.log(xpathTree);
+  return xpathTree;
 }
 
 function sortObjects(array){

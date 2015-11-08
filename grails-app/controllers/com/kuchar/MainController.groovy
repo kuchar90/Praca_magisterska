@@ -39,7 +39,21 @@ class MainController {
     }
 
 
+    def saveElementActionElements(){
+        log.debug("saveElementActionElements")
+        println params
+//        JSONArray elements = JSON.parse(params.elements);
+//        Website website = Website.list()[0];
+//        elements.each {
+//            println it
+//            Element element = new Element(elementXPath: it)
+//            website.addToElements(element);
+//
+//        }
 
+
+        render 200
+    }
 
     def index() {
 
@@ -102,10 +116,10 @@ class MainController {
         loadjsFile(driver, "webdriverScripts//jQuerify.js");
         loadjsFile(driver, "webdriverScripts//XPathUtils.js");
         loadjsFile(driver, "webdriverScripts//mutation-summary.js");
-       // loadjsFile(driver, "webdriverScripts//anaylyzeElementAction.js");
-//        js.executeScript(
-//                "anaylyzeElementAction('${element.elementXPath.replaceAll("(\\r|\\n|\\r\\n)+", "\\\\n")}');"
-//        );
+        loadjsFile(driver, "webdriverScripts//anaylyzeElementAction.js");
+        js.executeScript(
+                "anaylyzeElementAction('${element.elementXPath.replaceAll("(\\r|\\n|\\r\\n)+", "\\\\n")}');"
+        );
 
 
 
