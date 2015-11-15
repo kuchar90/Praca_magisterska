@@ -3,8 +3,14 @@ console.log("anaylyzeElementAction.js loaded");
 var observer;
 var funcCall;
 var treeToXpaths;
+var sortObjects;
 var test;
 var testXpath;
+
+
+
+var preSortedArray;
+
 function anaylyzeElementAction(elementXpath){
 
 
@@ -45,20 +51,20 @@ funcCall = function funcCall(summaries){
   var objectsTree = sortObjects(array);
 
 
-  console.log(objectsTree);
-  console.log(objectsTree[0]);
-  test = objectsTree[0];
-  testXpath= treeToXpaths(objectsTree[0]);
-     console.log(testXpath);
-  console.log(JSON.stringify(testXpath));
-      $.ajax({
-    url: 'http://localhost:8080/Praca_magisterska/main/saveElementActionElements',
-    data: { elements: JSON.stringify(testXpath)},
-    success: function(data) {
-
-    },
-    type: 'POST'
-  });
+  //console.log(objectsTree);
+  //console.log(objectsTree[0]);
+  //test = objectsTree[0];
+  //testXpath= treeToXpaths(objectsTree[0]);
+  //   console.log(testXpath);
+  //console.log(JSON.stringify(testXpath));
+  //    $.ajax({
+  //  url: 'http://localhost:8080/Praca_magisterska/main/saveElementActionElements',
+  //  data: { elements: JSON.stringify(testXpath)},
+  //  success: function(data) {
+  //
+  //  },
+  //  type: 'POST'
+  //});
 
 
 
@@ -82,22 +88,35 @@ treeToXpaths = function treeToXpaths(elementsTree){
   return xpathTree;
 }
 
-function sortObjects(array){
+sortObjects = function sortObjects(array){
   var objectsTree = [];
+  console.log(array);
   for(i = 0; i < array.length; i++){
 
     var treeObject = {};
     treeObject.object = array[i].object;
     treeObject.children = []
     objectsTree.push(treeObject);
-
+    console.log('sorting for object');
+    console.log(treeObject.object);
     for(j = i+1; j< array.length; j++){
       if($.contains(treeObject.object, array[j].object)){
         treeObject.children.push(array[j]);
+        console.log(array[j].object);
+        console.log( 'is child of ');
+        console.log(treeObject.object);
+        console.log(treeObject.children);
         array.splice(j, 1);
         j--;
+
+        console.log('childrens...');
+        console.log(treeObject.children);
       }
     }
+    console.log('after children was find');
+    console.log(array);
+
+
     array.splice(i, 1);
 
 
@@ -109,6 +128,8 @@ function sortObjects(array){
     }
 
     if(treeObject.children.length > 0){
+      console.log('sorting childs of:');
+      console.log(treeObject.object);
       treeObject.children = sortObjects(treeObject.children) ;
     }
 
